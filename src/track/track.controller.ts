@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UploadedFiles,
@@ -13,6 +14,7 @@ import { TrackService } from './track.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { searchDto } from './dto/search-dto';
+import { UpdateTrackDto } from './dto/update-track.dto';
 
 @Controller('/tracks')
 export class TrackController {
@@ -54,5 +56,10 @@ export class TrackController {
   @Delete(':id')
   delete(@Param('id') id: number) {
     return this.trackService.delete(id);
+  }
+
+  @Patch("change/:id")
+   change(@Param("id") id:number,@Body() updateData:UpdateTrackDto){
+    return this.trackService.change(id,updateData)
   }
 }

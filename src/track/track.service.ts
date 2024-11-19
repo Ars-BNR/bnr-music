@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { TrackModel } from './model/track.model';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Op } from 'sequelize';
+import { UpdateTrackDto } from './dto/update-track.dto';
 
 @Injectable()
 export class TrackService {
@@ -62,6 +63,16 @@ export class TrackService {
 
   async delete(id: number) {
     const track = await this.trackRepository.destroy({ where: { id } });
+    return track;
+  }
+
+  async change(id: number, updateData: UpdateTrackDto) {
+    const track = await this.trackRepository.findByPk(id);
+
+    Object.assign(track, updateData);
+
+    await track.save();
+
     return track;
   }
 }
