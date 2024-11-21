@@ -1,5 +1,5 @@
 import { FileService, FileType } from './../file/file.service';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { TrackModel } from './model/track.model';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -18,61 +18,131 @@ export class TrackService {
     picture: Express.Multer.File,
     audio: Express.Multer.File,
   ): Promise<TrackModel> {
-    const audioPath = this.fileService.createFile(FileType.AUDIO, audio);
-    const picturePath = this.fileService.createFile(FileType.IMAGE, picture);
-    const track = await this.trackRepository.create({
-      ...dto,
-      listens: 0,
-      audio: audioPath,
-      picture: picturePath,
-    });
-    return track;
+    try {
+      if (!dto || !picture || !audio) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const audioPath = this.fileService.createFile(FileType.AUDIO, audio);
+      const picturePath = this.fileService.createFile(FileType.IMAGE, picture);
+      const track = await this.trackRepository.create({
+        ...dto,
+        listens: 0,
+        audio: audioPath,
+        picture: picturePath,
+      });
+      return track;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async getAll(count = 10, offset = 0): Promise<TrackModel[]> {
-    const tracks = await TrackModel.findAll({
-      limit: Number(count),
-      offset: Number(offset),
-    });
-    return tracks;
+    try {
+      if (!count || !offset) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const tracks = await TrackModel.findAll({
+        limit: Number(count),
+        offset: Number(offset),
+      });
+      return tracks;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async getOne(id: number): Promise<TrackModel> {
-    const track = await this.trackRepository.findByPk(id);
-    return track;
+    try {
+      if (!id) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const track = await this.trackRepository.findByPk(id);
+      return track;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async listen(id: number) {
-    const track = await this.trackRepository.findByPk(id);
-    track.listens += 1;
-    track.save();
-    return '+1 listen';
+    try {
+      if (!id) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const track = await this.trackRepository.findByPk(id);
+      track.listens += 1;
+      track.save();
+      return '+1 listen';
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async search(query: string): Promise<TrackModel[]> {
-    const tracks = await this.trackRepository.findAll({
-      where: {
-        [Op.or]: [
-          { name: { [Op.iLike]: `%${query}%` } },
-          { author: { [Op.iLike]: `%${query}%` } },
-        ],
-      },
-    });
-    return tracks;
+    try {
+      if (!query) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const tracks = await this.trackRepository.findAll({
+        where: {
+          [Op.or]: [
+            { name: { [Op.iLike]: `%${query}%` } },
+            { author: { [Op.iLike]: `%${query}%` } },
+          ],
+        },
+      });
+      return tracks;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async delete(id: number) {
-    const track = await this.trackRepository.destroy({ where: { id } });
-    return track;
+    try {
+      if (!id) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const track = await this.trackRepository.destroy({ where: { id } });
+      return track;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async change(id: number, updateData: UpdateTrackDto) {
-    const track = await this.trackRepository.findByPk(id);
+    try {
+      if (!id || !updateData) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const track = await this.trackRepository.findByPk(id);
 
-    Object.assign(track, updateData);
+      Object.assign(track, updateData);
 
-    await track.save();
+      await track.save();
 
-    return track;
+      return track;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

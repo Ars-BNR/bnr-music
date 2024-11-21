@@ -19,5 +19,5 @@ export class PlaylistTrackModel extends Model {
   })
   @ForeignKey(() => TrackModel)
   @Column
-  trackId: number;
+  trackId?: number;
 }

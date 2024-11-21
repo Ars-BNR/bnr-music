@@ -12,52 +12,83 @@ export class AlbumTrackService {
   ) {}
 
   async create(dto: CreateAlbumTrackDto) {
-    const candidate = await this.albumTrackRepository.findOne({
-      where: {
-        trackId: dto.trackId,
-        albumId: dto.albumId,
-      },
-    });
-    if (candidate) {
-      throw new HttpException(
-        'Данный трек уже привязан к альбому',
-        HttpStatus.BAD_REQUEST,
-      );
+    try {
+      if (!dto) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const candidate = await this.albumTrackRepository.findOne({
+        where: {
+          trackId: dto.trackId,
+          albumId: dto.albumId,
+        },
+      });
+      if (candidate) {
+        throw new HttpException(
+          'Данный трек уже привязан к альбому',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const albumTrack = await this.albumTrackRepository.create({ ...dto });
+      return albumTrack;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    const albumTrack = await this.albumTrackRepository.create({ ...dto });
-    return albumTrack;
   }
 
   async delete(albumId: number, trackId: number) {
-    const album = await this.albumTrackRepository.destroy({
-      where: {
-        albumId,
-        trackId,
-      },
-    });
+    try {
+      if (!albumId || !trackId) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const album = await this.albumTrackRepository.destroy({
+        where: {
+          albumId,
+          trackId,
+        },
+      });
 
-    if (album === 0) {
-      throw new HttpException('Запись не найдена', HttpStatus.NOT_FOUND);
+      if (album === 0) {
+        throw new HttpException('Запись не найдена', HttpStatus.NOT_FOUND);
+      }
+
+      return album;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    return album;
   }
 
-  async change(dto: UpdateAlbumTrackDto) {
-    const albumTrack = await this.albumTrackRepository.findOne({
-      where: {
-        trackId: dto.trackId,
-      },
-    });
+  async change(
+    albumId: number,
+    trackId: number,
+    updatedData: UpdateAlbumTrackDto,
+  ) {
+    try {
+      if (!albumId || !trackId) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const albumTrack = await this.albumTrackRepository.findOne({
+        where: { albumId, trackId },
+      });
 
-    if (!albumTrack) {
-      throw new Error('Связь между альбомом и треком не найдена');
+      if (!albumTrack) {
+        throw new HttpException('Запись не найдена', HttpStatus.NOT_FOUND);
+      }
+
+      Object.assign(albumTrack, updatedData);
+
+      await albumTrack.save();
+      return albumTrack;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    albumTrack.albumId = dto.albumId;
-
-    await albumTrack.save();
-
-    return albumTrack;
   }
 }

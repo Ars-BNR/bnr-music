@@ -13,15 +13,19 @@ export class AlbumTrackController {
   }
 
   @Delete('delete/:albumId/:trackId')
-  async delete(
+   delete(
     @Param('albumId') albumId: number,
     @Param('trackId') trackId: number,
   ) {
-    await this.albumTrackService.delete(albumId, trackId);
+    return this.albumTrackService.delete(albumId, trackId);
   }
 
-  @Patch('change')
-  change(@Body() updateData: UpdateAlbumTrackDto) {
-    return this.albumTrackService.change(updateData);
+  @Patch('change/:albumId/:trackId')
+  change(
+    @Param('albumId') albumId: number,
+    @Param('trackId') trackId: number,
+    @Body() updateData: UpdateAlbumTrackDto,
+  ) {
+    return this.albumTrackService.change(albumId, trackId, updateData);
   }
 }
