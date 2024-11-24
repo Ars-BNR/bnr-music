@@ -11,7 +11,7 @@ import {
 } from 'sequelize-typescript';
 import { UserModel } from 'src/user/model/user.model';
 
-@Table({ tableName: 'tokens', timestamps: false })
+@Table({ tableName: 'tokens' })
 export class TokenModel extends Model {
   @ApiProperty({
     example: 1,

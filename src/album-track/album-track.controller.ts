@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { AlbumTrackService } from './album-track.service';
 import { CreateAlbumTrackDto } from './dto/create-albumTrack.dto';
 import { UpdateAlbumTrackDto } from './dto/update-albumTrack.dto';
@@ -12,20 +20,18 @@ export class AlbumTrackController {
     return this.albumTrackService.create(dto);
   }
 
-  @Delete('delete/:albumId/:trackId')
-   delete(
-    @Param('albumId') albumId: number,
-    @Param('trackId') trackId: number,
-  ) {
-    return this.albumTrackService.delete(albumId, trackId);
+  @Get(':id')
+  getOne(@Param('id') id: number) {
+    return this.albumTrackService.getOne(id);
   }
 
-  @Patch('change/:albumId/:trackId')
-  change(
-    @Param('albumId') albumId: number,
-    @Param('trackId') trackId: number,
-    @Body() updateData: UpdateAlbumTrackDto,
-  ) {
-    return this.albumTrackService.change(albumId, trackId, updateData);
+  @Delete('delete/:id')
+  delete(@Param('id') id: number) {
+    return this.albumTrackService.delete(id);
+  }
+
+  @Patch('change/:id')
+  change(@Param('id') id: number, @Body() updateData: UpdateAlbumTrackDto) {
+    return this.albumTrackService.change(id, updateData);
   }
 }

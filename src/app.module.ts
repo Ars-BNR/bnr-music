@@ -26,9 +26,12 @@ import { CollectionPlaylistModel } from './collection-playlist/model/collection-
 import { CollectionAlbumModel } from './collection-album/model/collection-album.model';
 import { SeedModule } from './seed/seed.module';
 import { FileModule } from './file/file.module';
+import { MailModule } from './mail/mail.module';
+import { RateLimiterModule } from 'nestjs-rate-limiter';
 
 @Module({
   imports: [
+    RateLimiterModule,
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
@@ -75,6 +78,7 @@ import { FileModule } from './file/file.module';
     CollectionAlbumModule,
     SeedModule,
     FileModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

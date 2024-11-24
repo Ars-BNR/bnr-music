@@ -1,8 +1,11 @@
+import * as bcrypt from 'bcrypt';
+
 const users = [
   {
-    login: 'user@mail.ru',
-    password: '123441',
+    email: 'adminius@mail.ru',
+    password: bcrypt.hashSync('adminius', 10),
     role: 'admin',
+    isActivated: true,
   },
 ];
 export default users;

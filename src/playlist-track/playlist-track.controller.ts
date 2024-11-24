@@ -12,20 +12,13 @@ export class PlaylistTrackController {
     return this.playlistTrackService.create(dto);
   }
 
-  @Delete('delete/:playlistId/:trackId')
-  delete(
-    @Param('playlistId') albumId: number,
-    @Param('trackId') trackId: number,
-  ) {
-    return this.playlistTrackService.delete(albumId, trackId);
+  @Delete('delete/:id')
+  delete(@Param('id') id: number) {
+    return this.playlistTrackService.delete(id);
   }
 
-  @Patch('change/:playlistId/:trackId')
-  change(
-    @Param('playlistId') playlistId: number,
-    @Param('trackId') trackId: number,
-    @Body() updateData: UpdatePlaylistTrackDto,
-  ) {
-    return this.playlistTrackService.change(playlistId, trackId, updateData);
+  @Patch('change/:id')
+  change(@Param('id') id: number, @Body() updateData: UpdatePlaylistTrackDto) {
+    return this.playlistTrackService.change(id, updateData);
   }
 }

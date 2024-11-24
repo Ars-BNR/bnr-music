@@ -3,12 +3,15 @@ import { InjectModel } from '@nestjs/sequelize';
 import { AlbumTrackModel } from './model/album-track.model';
 import { CreateAlbumTrackDto } from './dto/create-albumTrack.dto';
 import { UpdateAlbumTrackDto } from './dto/update-albumTrack.dto';
+import { TrackModel } from 'src/track/model/track.model';
+import { AlbumModel } from 'src/album/model/album.model';
 
 @Injectable()
 export class AlbumTrackService {
   constructor(
     @InjectModel(AlbumTrackModel)
     private albumTrackRepository: typeof AlbumTrackModel,
+    @InjectModel(AlbumModel) private albumModel: typeof AlbumModel,
   ) {}
 
   async create(dto: CreateAlbumTrackDto) {
@@ -38,9 +41,33 @@ export class AlbumTrackService {
     }
   }
 
-  async delete(albumId: number, trackId: number) {
+  async getOne(id: number) {
     try {
-      if (!albumId || !trackId) {
+      if (!id) {
+        throw new HttpException(
+          'Не указаны все данные',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const albumTrack = await this.albumModel.findByPk(id, {
+        include: [
+          {
+            model: TrackModel,
+            through: {
+              attributes: [],
+            },
+          },
+        ],
+      });
+      return albumTrack;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async delete(id: number) {
+    try {
+      if (!id) {
         throw new HttpException(
           'Не указаны все данные',
           HttpStatus.BAD_REQUEST,
@@ -48,8 +75,7 @@ export class AlbumTrackService {
       }
       const album = await this.albumTrackRepository.destroy({
         where: {
-          albumId,
-          trackId,
+          id,
         },
       });
 
@@ -63,30 +89,28 @@ export class AlbumTrackService {
     }
   }
 
-  async change(
-    albumId: number,
-    trackId: number,
-    updatedData: UpdateAlbumTrackDto,
-  ) {
+  async change(id: number, updatedData: UpdateAlbumTrackDto) {
     try {
-      if (!albumId || !trackId) {
+      if (!id) {
         throw new HttpException(
           'Не указаны все данные',
           HttpStatus.BAD_REQUEST,
         );
       }
-      const albumTrack = await this.albumTrackRepository.findOne({
-        where: { albumId, trackId },
-      });
-
-      if (!albumTrack) {
-        throw new HttpException('Запись не найдена', HttpStatus.NOT_FOUND);
+      const idExists = await this.albumTrackRepository.findByPk(id);
+      if (!idExists) {
+        throw new HttpException(
+          'Нет такого трека в плейлисте',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
-      Object.assign(albumTrack, updatedData);
-
-      await albumTrack.save();
-      return albumTrack;
+      const newData = await this.albumTrackRepository.update(updatedData, {
+        where: {
+          id: id,
+        },
+      });
+      return newData;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

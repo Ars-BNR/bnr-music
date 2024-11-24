@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import {
+  AutoIncrement,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
 import { AlbumModel } from 'src/album/model/album.model';
 import { TrackModel } from 'src/track/model/track.model';
 

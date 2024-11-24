@@ -25,10 +25,10 @@ export class UserModel extends Model {
   @Column(DataType.INTEGER)
   id: number;
 
-  @ApiProperty({ example: 'Misha@mail.ru', description: 'Логин пользователя' })
+  @ApiProperty({ example: 'Misha@mail.ru', description: 'Email пользователя' })
   @Unique
   @Column(DataType.STRING)
-  login: string;
+  email: string;
 
   @ApiProperty({ example: 'Miha6318', description: 'Пароль пользователя' })
   @Column(DataType.STRING)
@@ -38,6 +38,18 @@ export class UserModel extends Model {
   @Default('user')
   @Column(DataType.STRING)
   role: string;
+
+  @ApiProperty({ example: 'false', description: 'Активирован ли пользователь' })
+  @Default(false)
+  @Column(DataType.STRING)
+  isActivated: boolean;
+
+  @ApiProperty({
+    example: 'jhfdhbg12f',
+    description: 'Ссылка на активацию аккаунта',
+  })
+  @Column(DataType.STRING)
+  activationLink: string;
 
   @HasMany(() => TokenModel)
   tokens: TokenModel[];

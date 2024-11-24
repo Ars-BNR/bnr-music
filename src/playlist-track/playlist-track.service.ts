@@ -40,9 +40,9 @@ export class PlaylistTrackService {
     }
   }
 
-  async delete(playlistId: number, trackId: number) {
+  async delete(id: number) {
     try {
-      if (!playlistId || !trackId) {
+      if (!id) {
         throw new HttpException(
           'Не указаны все данные',
           HttpStatus.BAD_REQUEST,
@@ -51,8 +51,7 @@ export class PlaylistTrackService {
 
       const playlistTrack = await this.playlistTrackRepository.destroy({
         where: {
-          playlistId,
-          trackId,
+          id,
         },
       });
       if (playlistTrack === 0) {
@@ -65,42 +64,28 @@ export class PlaylistTrackService {
     }
   }
 
-  async change(
-    playlistId: number,
-    trackId: number,
-    updatedData: UpdatePlaylistTrackDto,
-  ) {
+  async change(id: number, updatedData: UpdatePlaylistTrackDto) {
     try {
-      console.log('playlistId || trackId', playlistId, trackId);
-      console.log('updatedData', updatedData);
-      if (!playlistId || !trackId) {
+      if (!id) {
         throw new HttpException(
           'Не указаны все данные',
           HttpStatus.BAD_REQUEST,
         );
       }
-      const playlistTrack = await this.playlistTrackRepository.findOne({
+      const idExists = await this.playlistTrackRepository.findByPk(id);
+      if (!idExists) {
+        throw new HttpException(
+          'Нет такого трека в плейлисте',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const newData = await this.playlistTrackRepository.update(updatedData, {
         where: {
-          playlistId,
-          trackId,
+          id: id,
         },
       });
-      if (!playlistTrack) {
-        throw new HttpException('Запись не найдена', HttpStatus.NOT_FOUND);
-      }
-
-      if (updatedData.playlistId !== undefined) {
-        playlistTrack.playlistId = updatedData.playlistId;
-      }
-      if (updatedData.trackId !== undefined) {
-        playlistTrack.trackId = updatedData.trackId;
-      }
-
-      // Object.assign(playlistTrack, updatedData);
-
-      await playlistTrack.save();
-
-      return playlistTrack;
+      return newData;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

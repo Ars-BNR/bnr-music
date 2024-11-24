@@ -57,7 +57,7 @@ export class AlbumService {
         include: [
           {
             model: TrackModel,
-            through: { attributes: [] }, // Исключаем промежуточную таблицу из результата
+            through: { attributes: [] },
           },
         ],
       });
