@@ -27,11 +27,17 @@ import { CollectionAlbumModel } from './collection-album/model/collection-album.
 import { SeedModule } from './seed/seed.module';
 import { FileModule } from './file/file.module';
 import { MailModule } from './mail/mail.module';
-import { RateLimiterModule } from 'nestjs-rate-limiter';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-    RateLimiterModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 0,
+        limit: 0,
+      },
+    ]),
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
@@ -81,6 +87,11 @@ import { RateLimiterModule } from 'nestjs-rate-limiter';
     MailModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

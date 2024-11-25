@@ -13,12 +13,12 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Request, Response } from 'express';
 import { ActivateDto } from './dto/check-link.dto';
-import { RateLimit } from 'nestjs-rate-limiter';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decorators/roles-auth.decorator';
 import { UserResponse } from './response/user-response';
 import { UserModel } from './model/user.model';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Пользователи')
 @Controller()
@@ -39,12 +39,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Вход в учетную запись пользователя' })
   @ApiResponse({ status: 200, type: UserResponse })
+  @Throttle({default:{limit:1,ttl:70000}})
   @Post('login')
-  @RateLimit({
-    points: 5,
-    duration: 60,
-    errorMessage: 'Слишком много попыток входа. Попробуйте через минуту.',
-  })
   async login(
     @Body() userDto: CreateUserDto,
     @Res({ passthrough: true }) res: Response,
