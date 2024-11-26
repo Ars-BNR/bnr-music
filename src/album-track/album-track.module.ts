@@ -5,10 +5,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { AlbumTrackModel } from './model/album-track.model';
 import { AlbumModel } from 'src/album/model/album.model';
 import { TrackModel } from 'src/track/model/track.model';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [SequelizeModule.forFeature([AlbumTrackModel,AlbumModel, TrackModel])],
   controllers: [AlbumTrackController],
-  providers: [AlbumTrackService],
+  providers: [AlbumTrackService,JwtService],
 })
 export class AlbumTrackModule {}

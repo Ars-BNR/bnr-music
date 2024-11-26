@@ -39,7 +39,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Вход в учетную запись пользователя' })
   @ApiResponse({ status: 200, type: UserResponse })
-  @Throttle({default:{limit:1,ttl:70000}})
+  @Throttle({default:{limit:3,ttl:50000}})
   @Post('login')
   async login(
     @Body() userDto: CreateUserDto,

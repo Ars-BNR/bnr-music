@@ -6,11 +6,14 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { AlbumTrackService } from './album-track.service';
 import { CreateAlbumTrackDto } from './dto/create-albumTrack.dto';
 import { UpdateAlbumTrackDto } from './dto/update-albumTrack.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('album_track')
 export class AlbumTrackController {
   constructor(private albumTrackService: AlbumTrackService) {}

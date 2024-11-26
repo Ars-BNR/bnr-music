@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { PlaylistTrackService } from './playlist-track.service';
 import { CreatePlaylistTrackDto } from './dto/create-playlistTrack.dto';
 import { UpdatePlaylistTrackDto } from './dto/update-playlistTrack.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('playlist_track')
 export class PlaylistTrackController {
   constructor(private playlistTrackService: PlaylistTrackService) {}

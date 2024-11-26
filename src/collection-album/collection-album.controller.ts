@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CollectionAlbumService } from './collection-album.service';
 import { CreateCollectionAlbumDto } from './dto/create-collectionAlbum.dto';
 import { UpdateCollectionAlbumDto } from './dto/update-collectionAlbum.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('collection_album')
 export class CollectionAlbumController {
   constructor(private collectionAlbumService: CollectionAlbumService) {}
